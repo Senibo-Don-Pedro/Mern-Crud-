@@ -12,7 +12,7 @@ const WorkoutForm = () => {
 
     const workout = {title,load,reps}
 
-    const response = await fetch("/api/workouts",{
+    const response = await fetch("http://localhost:4000/api/workouts",{
       method: "POST",
       body: JSON.stringify(workout),
       headers:{
@@ -62,6 +62,7 @@ const WorkoutForm = () => {
       />
 
       <button>Add workout</button>
+      {error && <div className="error">{error}</div>}
 
     </form>
 
