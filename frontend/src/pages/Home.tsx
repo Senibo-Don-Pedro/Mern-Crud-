@@ -1,12 +1,16 @@
-
-import { useEffect, useState } from "react"
-
+import { useEffect} from "react"
+import type { RootState } from "../store"
+import { useSelector, useDispatch } from "react-redux"
+import { setWorkouts} from "../store"
 //components
 import {WorkoutDetails} from "../components/WorkoutDetails"
 import WorkoutForm from "../components/WorkoutForm"
-const Home = () => {
-  const [workouts, setWorkouts] = useState() 
 
+
+const Home = () => {
+  const allWorkouts = useSelector((state:RootState) => state.workouts.workouts)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -14,20 +18,20 @@ const Home = () => {
       const json = await response.json()
 
       if (response.ok) {
-        setWorkouts(json) 
+        dispatch(setWorkouts(json))
       }
       
     }
 
     fetchWorkouts()
-    console.log(workouts)
+    console.log()
   },[])
 
 
   return (
     <div className="home">
       <div className="workouts">
-        {workouts && workouts.map((workout) => (
+        {allWorkouts && allWorkouts.map((workout) => (
           <WorkoutDetails key={workout._id} workout={workout}/> 
         ))}
       </div>
