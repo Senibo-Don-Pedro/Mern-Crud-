@@ -1,26 +1,11 @@
-import { useDispatch } from "react-redux"
-import { deleteWorkout } from "../store/index.ts"
+import { useDeleteWorkoutMutation } from "../api/workoutSlice"
 
 
-export function WorkoutDetails({workout}) {
-  const dispatch = useDispatch()
-
+export function WorkoutDetails({workout}: any) {
+  const [deleteWorkout] = useDeleteWorkoutMutation()
 
   const handleDelete = async () => {
-
-    const response = await fetch('http://localhost:4000/api/workouts/' + workout._id, {
-      method: 'DELETE'
-    })
-
-    const json = await response.json()
-
-    
-    
-    if (response.ok) {
-      console.log("deleted", json)
-      dispatch(deleteWorkout(json))    
-    }
-
+    await deleteWorkout(workout) 
   }
 
   return (

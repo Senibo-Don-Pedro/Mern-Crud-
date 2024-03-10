@@ -1,15 +1,20 @@
+import { useAddWorkoutMutation } from "../api/workoutSlice.ts"
+
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { createWorkouts } from "../store";
+
+
 
 const WorkoutForm = () => {
-  const dispatch = useDispatch()
+
+  const [addWorkout, {isLoading}] = useAddWorkoutMutation();
+
+  
 
   const [title, setTitle] = useState('')
   const [load, setLoad] = useState('')
   const [reps, setReps] = useState('')
-  const [error, setError] = useState(null) 
-  const [emptyFields, setEmptyFields] = useState([])
+  const [err, setErr] = useState(null) 
+  const [emptyFields, setEmptyFields] = useState<string[] | never>([])
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,30 +22,22 @@ const WorkoutForm = () => {
 
     const workout = {title,load,reps}
 
-    const response = await fetch("http://localhost:4000/api/workouts",{
-      method: "POST",
-      body: JSON.stringify(workout),
-      headers:{
-        'Content-Type':'application/json',
-      }
-    })
+     const response:any = await addWorkout(workout)
 
-    const json = await response.json() 
+     if (response.error) {
+      console.log(response.error)
+      const errorTitle = response.error.data.error
+      const fields = response.error.data.emptyFields
 
-    if (!response.ok) {
-      setError(json.error) 
-      setEmptyFields(json.emptyFields)
-    }
-
-    if (response.ok) {
-      setTitle("")
-      setLoad("")
-      setReps("")
-      setError(null)
+      setErr(errorTitle)
+      setEmptyFields(fields)
+     } else {
+      setTitle('')
+      setLoad('')
+      setReps('')
+      setErr(null)
       setEmptyFields([])
-      console.log('new workout added',json)
-      dispatch(createWorkouts(json))
-    }
+     }
   }
 
   return (
@@ -71,9 +68,8 @@ const WorkoutForm = () => {
         value={reps}
         className={emptyFields.includes('reps') ? 'error' : ''}
       />
-
-      <button>Add workout</button>
-      {error && <div className="error">{error}</div>}
+      {isLoading ?<button disabled>Adding Workout...</button> :<button>Add workout</button>}
+      {err && <div className="error">{err}</div>}
 
     </form>
 

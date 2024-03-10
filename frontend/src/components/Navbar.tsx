@@ -5,7 +5,7 @@ export function Navbar() {
     <header>
       <div>
         <Link to={"/"}>
-          <h1>Workout Buddy</h1>
+          <h1>Keep Fit</h1>
         </Link>
       </div>
     </header>
