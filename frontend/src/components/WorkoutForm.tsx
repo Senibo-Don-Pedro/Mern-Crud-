@@ -1,44 +1,56 @@
-import { useAddWorkoutMutation } from "../api/workoutSlice.ts"
+import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
+import { useAuthContext } from '../hooks/useAuthContext'
 
 import { useState } from "react";
 
-
-
 const WorkoutForm = () => {
 
-  const [addWorkout, {isLoading}] = useAddWorkoutMutation();
-
-  
+  const { dispatch } = useWorkoutsContext()
+  const { user } = useAuthContext()
 
   const [title, setTitle] = useState('')
   const [load, setLoad] = useState('')
   const [reps, setReps] = useState('')
-  const [err, setErr] = useState(null) 
-  const [emptyFields, setEmptyFields] = useState<string[] | never>([])
+  const [error, setError] = useState<string | null>(null) 
+  const [emptyFields, setEmptyFields] = useState<string[] | never[]>([])
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+
+    if (!user) {
+      setError('You must be logged in')
+      return
+    }
+
     const workout = {title,load,reps}
 
-     const response:any = await addWorkout(workout)
+    const response = await fetch('http://localhost:4000/api/workouts', {
+      method: 'POST',
+      body: JSON.stringify(workout),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
 
-     if (response.error) {
-      console.log(response.error)
-      const errorTitle = response.error.data.error
-      const fields = response.error.data.emptyFields
+    const json = await response.json()
 
-      setErr(errorTitle)
-      setEmptyFields(fields)
-     } else {
+    if (!response.ok) {
+      setError(json.error)
+      setEmptyFields(json.emptyFields)
+    }
+
+    if (response.ok) {
       setTitle('')
       setLoad('')
       setReps('')
-      setErr(null)
+      setError(null)
       setEmptyFields([])
-     }
-  }
+      dispatch({type: 'CREATE_WORKOUT', payload: json})
+    }
+  } 
 
   return (
     <form className="create" onSubmit={handleSubmit}>
@@ -68,8 +80,8 @@ const WorkoutForm = () => {
         value={reps}
         className={emptyFields.includes('reps') ? 'error' : ''}
       />
-      {isLoading ?<button disabled>Adding Workout...</button> :<button>Add workout</button>}
-      {err && <div className="error">{err}</div>}
+      <button>Add workout</button>
+      {error && <div className="error">{error}</div>}
 
     </form>
 

@@ -1,34 +1,40 @@
-import { useGetWorkoutsQuery } from "../api/workoutSlice"
-//components
-import {WorkoutDetails} from "../components/WorkoutDetails"
-import WorkoutForm from "../components/WorkoutForm"
+import { useEffect }from 'react'
+import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
+import { useAuthContext } from "../hooks/useAuthContext"
 
-export type WorkoutType = {
-  title: string;
-  reps: number;
-  load: number;
-  _id: string;
-  createdAt?: string;
-  updatedAt: string;
-  __v?: number
-}
-
-
+import {WorkoutDetails} from '../components/WorkoutDetails'
+import WorkoutForm from '../components/WorkoutForm'
 
 const Home = () => {
+  const { workouts, dispatch } = useWorkoutsContext()
+  const { user } = useAuthContext()
 
-  const {
-    data: workouts,
-  } = useGetWorkoutsQuery()
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      const response = await fetch('http://localhost:4000/api/workouts', {
+        headers: {'Authorization': `Bearer ${user.token}`},
+      })
+      
+      const json = await response.json()
+      
+      if (response.ok) {
+        dispatch({type: 'SET_WORKOUTS', payload: json})
+      }
+    }
+    
+    if (user) {
+      fetchWorkouts()
+    }
+  }, [dispatch, user])
 
-  return (
+ return (
     <div className="home">
       <div className="workouts">
-        {workouts && workouts.map((workout:WorkoutType) => (
-          <WorkoutDetails key={workout._id} workout={workout}/> 
+        {workouts && workouts.map((workout) => (
+          <WorkoutDetails key={workout._id} workout={workout} />
         ))}
       </div>
-      <WorkoutForm/>
+      <WorkoutForm />                                           
     </div>
   )
 }
