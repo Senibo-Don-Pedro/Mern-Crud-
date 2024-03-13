@@ -5,7 +5,6 @@ import './index.css'
 import { AuthContextProvider } from './context/AuthContext.tsx'
 import { WorkoutsContextProvider } from './context/WorkoutContext'
 
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthContextProvider>
