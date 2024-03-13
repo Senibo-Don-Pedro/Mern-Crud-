@@ -13,7 +13,7 @@ const app = express()
 
 //cors
 const corsOptions = {
-  origin: "http://127.0.0.1:5173",
+  origin: "https://keepfit-s6qr.onrender.com",
   allowedHeaders: ["Content-Type", "Authorization"],
 }
 
