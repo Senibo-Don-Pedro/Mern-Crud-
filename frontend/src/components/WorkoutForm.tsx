@@ -12,7 +12,7 @@ const WorkoutForm = () => {
   const [load, setLoad] = useState('')
   const [reps, setReps] = useState('')
   const [error, setError] = useState<string | null>(null) 
-  const [emptyFields, setEmptyFields] = useState<string[] | never[]>([])
+  const [emptyFields, setEmptyFields] = useState<string[] >([])
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

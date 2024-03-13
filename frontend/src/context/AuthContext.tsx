@@ -20,7 +20,7 @@ export const AuthContextProvider = ({children}:{children: React.ReactNode}) => {
   })
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem('user') as string)
     
     if (user) {
       dispatch({type:'LOGIN', payload: user})
